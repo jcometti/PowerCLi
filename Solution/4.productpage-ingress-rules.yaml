@@ -1,0 +1,49 @@
+# nano 4.productpage-ingress-rules.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: productpage-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    #kubernetes.io/ingress.class: ingress-nginx
+spec:
+  ingressClassName: nginx #should be same name of kubectl get ingressClass
+  rules:
+  - http:
+      paths:
+      - path: /productpage #http://10.96.53.86:30865/appv1
+        pathType: Prefix
+        backend:
+          service:
+            name: productpage #referencia ao servico criado. 
+            port:
+              number: 9080 #porta definida no services
+      - path: /static #http://10.96.53.86:30865/appv1
+        pathType: Prefix
+        backend:
+          service:
+            name: productpage #referencia ao servico criado. 
+            port:
+              number: 9080 #porta definida no services
+      - path: /login #http://10.96.53.86:30865/appv1
+        pathType: Prefix
+        backend:
+          service:
+            name: productpage #referencia ao servico criado. 
+            port:
+              number: 9080 #porta definida no services
+      - path: /logout #http://10.96.53.86:30865/appv1
+        pathType: Prefix
+        backend:
+          service:
+            name: productpage #referencia ao servico criado. 
+            port:
+              number: 9080 #porta definida no services
+      - path: /api/v1/products #http://10.96.53.86:30865/appv1
+        pathType: Prefix
+        backend:
+          service:
+            name: productpage #referencia ao servico criado. 
+            port:
+              number: 9080 #porta definida no services

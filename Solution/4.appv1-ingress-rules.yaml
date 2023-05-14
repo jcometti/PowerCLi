@@ -1,0 +1,21 @@
+# nano 4.appv1-ingress-rules.yaml
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-test
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    #kubernetes.io/ingress.class: ingress-nginx
+spec:
+  ingressClassName: nginx #should be same name of kubectl get ingressClass
+  rules:
+  - http:
+      paths:
+      - path: /appv1 #http://10.96.53.86:30865/appv1
+        pathType: Exact
+        backend:
+          service:
+            name: app-v1 #referencia ao servico criado. 
+            port:
+              number: 8080 #porta definida no services
