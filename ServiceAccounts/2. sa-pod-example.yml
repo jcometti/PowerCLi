@@ -1,0 +1,30 @@
+---
+# Create service account 
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dev1
+---
+# create a pod using the service account above. 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vm-sa-test
+  labels:
+    app: front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      serviceAccountName: dev1
+      containers:
+      - name: nginx
+        image: nginx:alpine
+
+#Created a SA and associated it on a pod. 

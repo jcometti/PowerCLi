@@ -1,0 +1,58 @@
+#roles a service account that can create permission to list pods.
+---
+# 1. Create service account
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: dev1
+---
+# 2. create a pod using the service account above.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vm-dev1
+  labels:
+    app: front
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: front
+  template:
+    metadata:
+      labels:
+        app: front
+    spec:
+      serviceAccountName: dev1
+      containers:
+      - name: nginx
+        image: nginx:alpine
+---
+#3. create a role to use with the SA
+apiVersion: rbac.authorization.k8s.io/v1 #kubectl api-resources |grep -i roles
+kind: Role
+metadata:
+  namespace: default
+  name: productpg-reader
+rules:
+- apiGroups: [""]
+  resources: ["pods"] #This role only allow toe list, watch and get pods.
+  verbs: ["get", "watch", "list"]
+#- apiGroups: ["apps"]
+#  resouces: ["deployments"]
+#  verbs: ["get", "watch", "list"]
+---
+#4. Rolebinding associated to with SA
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: sa-pods
+  namespace: default
+subjects:
+- kind: ServiceAccount
+  name: dev1 #The SA name above
+  apiGroup: ""
+roleRef:
+  kind: Role #Roler Group
+  name: productpg-reader #This should match the name of Role or ClusterRole
+  apiGroup: rbac.authorization.k8s.io
