@@ -1,0 +1,45 @@
+# 5.calico-policys.yaml
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: default-deny-all
+spec:
+  selector: all()
+  types:
+  - Ingress
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-vm03-to-vm01
+spec:
+  selector: app == 'aaa'
+  types:
+  - Ingress
+  ingress:
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: app == 'ccc'
+    destination:
+      ports:
+      - 8080
+---
+apiVersion: projectcalico.org/v3
+kind: GlobalNetworkPolicy
+metadata:
+  name: allow-vm02-to-vm03
+spec:
+  selector: app == 'ccc'
+  types:
+  - Ingress
+  ingress:
+  - action: Allow
+    protocol: TCP
+    source:
+      selector: app == 'bbb'
+    destination:
+      ports:
+      - 8080
+---

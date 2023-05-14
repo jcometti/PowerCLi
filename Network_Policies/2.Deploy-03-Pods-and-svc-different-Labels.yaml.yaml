@@ -1,0 +1,114 @@
+# nano 2.Deploy-03-Pods-and-svc-different-Labels.yaml
+
+#Deploy pod 1 with label bbb
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vm01
+  namespace: zero-trust
+  labels:
+    app: aaa
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: aaa
+  template:
+    metadata:
+      labels:
+        app: aaa
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        command: ["sh", "-c", "echo VERSION 1.0 desde $HOSTNAME > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+---
+#Deploy pod 2 with label bbb
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vm02
+  namespace: zero-trust
+  labels:
+    app: bbb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bbb
+  template:
+    metadata:
+      labels:
+        app: bbb
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        command: ["sh", "-c", "echo VERSION 1.0 desde $HOSTNAME > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+---
+#Deploy pod 2 with label ccc
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vm03
+  namespace: zero-trust
+  labels:
+    app: ccc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ccc
+  template:
+    metadata:
+      labels:
+        app: ccc
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        command: ["sh", "-c", "echo VERSION 1.0 desde $HOSTNAME > /usr/share/nginx/html/index.html && nginx -g 'daemon off;'"]
+---
+#expose vm01 port 8080
+apiVersion: v1
+kind: Service
+metadata:
+  name: vm01-service
+  namespace: zero-trust
+spec:
+  selector:
+    app: aaa
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
+---
+#expose vm02 port 8080
+apiVersion: v1
+kind: Service
+metadata:
+  name: vm02-service
+  namespace: zero-trust
+spec:
+  selector:
+    app: bbb
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
+---
+#expose vm03 port 8080
+apiVersion: v1
+kind: Service
+metadata:
+  name: vm01-service
+  namespace: zero-trust
+spec:
+  selector:
+    app: ccc
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 80
+
+

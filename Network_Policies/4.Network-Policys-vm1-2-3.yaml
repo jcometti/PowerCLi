@@ -1,0 +1,62 @@
+# 4.Network-Policys-vm1-2-3.yaml
+
+#scenario
+#vm02 (with label app: bbb) is not allowed to connect to vm01 (with label app: aaa) on port 8080 
+#but is allowed to connect to vm03 (with label app: ccc) on port 8080, we can create 
+#NetworkPolicy objects in the zero-trust namespace.
+
+---
+#creating a default deny all ingress traffic to all pods in the zero-trust namespace.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 1.default-deny-all
+  namespace: zero-trust
+spec:
+  podSelector: {}
+  policyTypes:
+  - Ingress
+---
+# NetworkPolicy allows ingress traffic to pods with label app: aaa (i.e., vm01) 
+#from pods with label app: ccc (i.e., vm03) on port 8080.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 2.allow-vm03-to-vm01
+  namespace: zero-trust
+spec:
+  podSelector:
+    matchLabels:
+      app: aaa
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: ccc
+    ports:
+    - protocol: TCP
+      port: 8080
+---
+# allows ingress traffic to pods with label app: ccc (i.e., vm03) from pods 
+#with label app: bbb (i.e., vm02) on port 8080.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: 3.allow-vm02-to-vm03
+  namespace: zero-trust
+spec:
+  podSelector:
+    matchLabels:
+      app: ccc
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          app: bbb
+    ports:
+    - protocol: TCP
+      port: 8080

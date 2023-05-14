@@ -1,0 +1,21 @@
+# 3.Calico-Network-Policy.yaml
+
+apiVersion: projectcalico.org/v3
+kind: NetworkPolicy
+metadata:
+  name: vm1-allow-list
+  namespace: zero-trust
+spec:
+  selector: svc == 'vm1'
+  types:
+    - Ingress
+  ingress:
+    - action: Allow
+      source:
+        serviceAccounts:
+          names: ['dev1']
+        namespaceSelector: app == 'vm-test'
+      protocol: TCP
+      destination:
+        ports:
+          - 8080
